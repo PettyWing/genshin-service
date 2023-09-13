@@ -1,9 +1,9 @@
 package com.example.uumemory.dto;
 
-import com.example.uumemory.constants.MainType;
+import com.example.uumemory.constants.AppendProp;
 
 public class RelicsAttributes {
-    private MainType mainType;
+    private AppendProp appendProp;
     private double mainValue;
     private double maxHealth;
     private double minHealth;
@@ -16,12 +16,12 @@ public class RelicsAttributes {
     private double proficients;
     private double chargingRate;
 
-    public MainType getMainType() {
-        return mainType;
+    public AppendProp getMainType() {
+        return appendProp;
     }
 
-    public void setMainType(MainType mainType) {
-        this.mainType = mainType;
+    public void setMainType(AppendProp appendProp) {
+        this.appendProp = appendProp;
     }
 
     public double getMainValue() {
@@ -115,8 +115,8 @@ public class RelicsAttributes {
     public RelicsAttributes() {
     }
 
-    public RelicsAttributes(MainType mainType, double mainValue) {
-        this.mainType = mainType;
+    public RelicsAttributes(AppendProp appendProp, double mainValue) {
+        this.appendProp = appendProp;
         this.mainValue = mainValue;
     }
 

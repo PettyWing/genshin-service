@@ -1,27 +1,26 @@
 package com.example.uumemory.dto;
 
-import com.example.uumemory.constants.GroupType;
-import com.example.uumemory.constants.MainType;
-import com.example.uumemory.constants.Type;
+import com.example.uumemory.constants.EquipType;
+import com.example.uumemory.constants.AppendProp;
 
 public class RelicsDTO {
-    private Type type;
-    private GroupType groupType;
+    private EquipType equipType;
+    private String groupType;
     private RelicsAttributes relicsAttributes;
 
-    public Type getType() {
-        return type;
+    public EquipType getType() {
+        return equipType;
     }
 
-    public void setType(Type type) {
-        this.type = type;
+    public void setType(EquipType equipType) {
+        this.equipType = equipType;
     }
 
-    public GroupType getGroupType() {
+    public String getGroupType() {
         return groupType;
     }
 
-    public void setGroupType(GroupType groupType) {
+    public void setGroupType(String groupType) {
         this.groupType = groupType;
     }
 
@@ -33,10 +32,13 @@ public class RelicsDTO {
         this.relicsAttributes = relicsAttributes;
     }
 
-    public RelicsDTO(Type type, GroupType groupType, MainType mainType, double mainValue) {
-        this.type = type;
+    public RelicsDTO() {
+    }
+
+    public RelicsDTO(EquipType equipType, String groupType, AppendProp appendProp, double mainValue) {
+        this.equipType = equipType;
         this.groupType = groupType;
-        this.relicsAttributes = new RelicsAttributes(mainType, mainValue);
+        this.relicsAttributes = new RelicsAttributes(appendProp, mainValue);
     }
 }
 

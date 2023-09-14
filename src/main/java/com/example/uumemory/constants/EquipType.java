@@ -6,19 +6,25 @@ import org.apache.commons.lang3.StringUtils;
  * 圣遗物位置
  */
 public enum EquipType {
-    BRACER("EQUIP_BRACER", "生之花"),
-    NECKLACE( "EQUIP_NECKLACE", "死之羽"),
-    SHOES( "EQUIP_SHOES", "时之沙"),
-    RING( "EQUIP_RING", "空之杯"),
-    DRESS( "EQUIP_DRESS", "理之冠");
+    BRACER("EQUIP_BRACER", "equipBracer","生之花"),
+    NECKLACE( "EQUIP_NECKLACE","equipNecklace", "死之羽"),
+    SHOES( "EQUIP_SHOES", "equipShoes", "时之沙"),
+    RING( "EQUIP_RING", "equipRing","空之杯"),
+    DRESS( "EQUIP_DRESS", "equipDress","理之冠");
 
     // enka对应的名字
     private String name;
+    private String lowName;
     private String displayName;
 
-    EquipType(String name, String displayName) {
+    EquipType(String name,String lowName, String displayName) {
         this.name = name;
+        this.lowName = lowName;
         this.displayName = displayName;
+    }
+
+    public String getLowName() {
+        return lowName;
     }
 
     public String getName() {

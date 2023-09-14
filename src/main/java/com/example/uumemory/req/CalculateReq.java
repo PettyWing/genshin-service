@@ -33,23 +33,35 @@ public class CalculateReq {
     public void setGroupType(String groupType) {this.groupType = groupType;}
 
     public static class EquipTypesDTO {
-        @JSONField(name = "EQUIP_SHOES")
+        @JSONField(name = "equipShoes")
         private List<String> equipShoes;
-        @JSONField(name = "EQUIP_RING")
+        @JSONField(name = "equipRing")
         private List<String> equipRing;
-        @JSONField(name = "EQUIP_DRESS")
+        @JSONField(name = "equipDress")
         private List<String> equipDress;
 
-        public List<String> getEquipShoes() {return equipShoes;}
+        public List<String> getEquipShoes() {
+            return equipShoes;
+        }
 
-        public void setEquipShoes(List<String> equipShoes) {this.equipShoes = equipShoes;}
+        public void setEquipShoes(List<String> equipShoes) {
+            this.equipShoes = equipShoes;
+        }
 
-        public List<String> getEquipRing() {return equipRing;}
+        public List<String> getEquipRing() {
+            return equipRing;
+        }
 
-        public void setEquipRing(List<String> equipRing) {this.equipRing = equipRing;}
+        public void setEquipRing(List<String> equipRing) {
+            this.equipRing = equipRing;
+        }
 
-        public List<String> getEquipDress() {return equipDress;}
+        public List<String> getEquipDress() {
+            return equipDress;
+        }
 
-        public void setEquipDress(List<String> equipDress) {this.equipDress = equipDress;}
+        public void setEquipDress(List<String> equipDress) {
+            this.equipDress = equipDress;
+        }
     }
 }

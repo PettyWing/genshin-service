@@ -103,8 +103,8 @@ public class YuanController {
         for (EquipType equipType : EquipType.values()) {
             RelicsParam relicsParam = new RelicsParam();
             RelicsParam.Criteria criteria = relicsParam.createCriteria().andUidEqualTo(req.getUid()).andTypeEqualTo(equipType.getName());
-            if (equipTypes != null && equipTypes.containsKey(equipType.getName())) {
-                List<String> mainTypes = equipTypes.getJSONArray(equipType.getName()).toJavaList(String.class);
+            if (equipTypes != null && equipTypes.containsKey(equipType.getLowName())) {
+                List<String> mainTypes = equipTypes.getJSONArray(equipType.getLowName()).toJavaList(String.class);
                 if (mainTypes != null && !mainTypes.isEmpty()) {
                     criteria.andMainTypeIn(mainTypes);
                 }

@@ -10,11 +10,14 @@ import com.example.uumemory.entity.Relics;
 
 public class YuanConverter {
     public static RelicsDTO convert(FlatDTO flatDTO) {
+        if (flatDTO == null) {
+            return null;
+        }
         RelicsDTO relicsDTO = new RelicsDTO();
         relicsDTO.setType(EquipType.getType(flatDTO.getEquipType()));
         relicsDTO.setGroupType(Constants.LOC_INFO.getString(flatDTO.getSetNameTextMapHash()));
         RelicsAttributes relicsAttributes = new RelicsAttributes();
-        relicsAttributes.setMainType(AppendProp.getType(flatDTO.getReliquaryMainstat().getMainPropId()));
+        relicsAttributes.setAppendProp(AppendProp.getType(flatDTO.getReliquaryMainstat().getMainPropId()));
         relicsAttributes.setMainValue(flatDTO.getReliquaryMainstat().getStatValue());
         flatDTO.getReliquarySubstats().forEach(reliquarySubstatsDTO -> {
             AppendProp prop = AppendProp.getType(reliquarySubstatsDTO.getAppendPropId());
@@ -63,12 +66,15 @@ public class YuanConverter {
     }
 
     public static Relics convert(Long uid, RelicsDTO relicsDTO) {
+        if (relicsDTO == null) {
+            return null;
+        }
         Relics relics = new Relics();
         relics.setUid(uid);
         relics.setCharacterId(relicsDTO.getCharacterId());
         relics.setType(relicsDTO.getType().getName());
         relics.setGroupType(relicsDTO.getGroupType());
-        relics.setMainType(relicsDTO.getAttributes().getMainType().getName());
+        relics.setMainType(relicsDTO.getAttributes().getAppendProp().getName());
         relics.setMainValue(relicsDTO.getAttributes().getMainValue());
         relics.setMaxHealth(relicsDTO.getAttributes().getMaxHealth());
         relics.setMinHealth(relicsDTO.getAttributes().getMinHealth());
@@ -83,13 +89,16 @@ public class YuanConverter {
         return relics;
     }
 
-    public static RelicsDTO convert(Relics relics){
+    public static RelicsDTO convert(Relics relics) {
+        if (relics == null) {
+            return null;
+        }
         RelicsDTO relicsDTO = new RelicsDTO();
         relicsDTO.setType(EquipType.getType(relics.getType()));
         relicsDTO.setGroupType(relics.getGroupType());
         relicsDTO.setCharacterId(relics.getCharacterId());
         RelicsAttributes attributes = new RelicsAttributes();
-        attributes.setMainType(AppendProp.getType(relics.getMainType()));
+        attributes.setAppendProp(AppendProp.getType(relics.getMainType()));
         attributes.setMainValue(relics.getMainValue());
         attributes.setMaxHealth(relics.getMaxHealth());
         attributes.setMinHealth(relics.getMinHealth());

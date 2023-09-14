@@ -3,6 +3,8 @@ package com.example.uumemory.service;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
@@ -36,25 +38,42 @@ public class YuanServcie {
     /**
      * 计算单个圣遗物的评分
      *
-     * @param name      人物
-     * @param relicsDTO 圣遗物数据
+     * @param characterId 人物
+     * @param relicsDTOs  圣遗物数据
      */
-    public double calculateSingleRelicsScore(String name, RelicsDTO relicsDTO) {
-        RelicsAttributes relicsAttributes = relicsDTO.getAttributes();
-        RelicsAttributes relicsYield = CHARACTER_DTOS.get(name).getRelicsAttributes();
-        double score = relicsAttributes.getCriticalStrikeRate() * 2 * relicsYield.getCriticalStrikeRate()
-            + relicsAttributes.getCriticalStrikeDamage() * 1 * relicsYield.getCriticalStrikeDamage()
-            + relicsAttributes.getProficients() * 0.33 * relicsYield.getProficients()
-            + relicsAttributes.getChargingRate() * 1.1979 * relicsYield.getChargingRate()
-            + relicsAttributes.getMaxAttack() * 1.33 * relicsYield.getMaxAttack()
-            + relicsAttributes.getMaxHealth() * 1.33 * relicsYield.getMaxHealth()
-            + relicsAttributes.getMaxDefense() * 1.06 * relicsYield.getMaxDefense();
-        if (relicsDTO.getType().equals(EquipType.DRESS) &&
-            (relicsAttributes.getMainType().equals(AppendProp.CRITICAL_STRIKE_DAMAGE)) || relicsAttributes.getMainType().equals(AppendProp.CRITICAL_STRIKE_RATE)) {
-            // 如果是暴击率或者暴击头，加20分
-            score += 20;
+    public RelicsDTO calculateRelicsScore(Long characterId, List<RelicsDTO> relicsDTOs) {
+        try {
+            if (relicsDTOs == null || relicsDTOs.isEmpty()) {
+                return null;
+            }
+            AtomicReference<Double> tmpScore = new AtomicReference<>((double)0);
+            AtomicReference<RelicsDTO> tmpRelicsDTO = new AtomicReference<>();
+            relicsDTOs.forEach(relicsDTO -> {
+                RelicsAttributes relicsAttributes = relicsDTO.getAttributes();
+                RelicsAttributes relicsYield = CHARACTER_DTOS.get(characterId).getRelicsAttributes();
+                double score = Optional.ofNullable(relicsAttributes.getCriticalStrikeRate()).orElse(0.0) * 2 * relicsYield.getCriticalStrikeRate()
+                    + Optional.ofNullable(relicsAttributes.getCriticalStrikeDamage()).orElse(0.0) * 1 * relicsYield.getCriticalStrikeDamage()
+                    + Optional.ofNullable(relicsAttributes.getProficients()).orElse(0.0) * 0.33 * relicsYield.getProficients()
+                    + Optional.ofNullable(relicsAttributes.getChargingRate()).orElse(0.0) * 1.1979 * relicsYield.getChargingRate()
+                    + Optional.ofNullable(relicsAttributes.getMaxAttack()).orElse(0.0) * 1.33 * relicsYield.getMaxAttack()
+                    + Optional.ofNullable(relicsAttributes.getMaxHealth()).orElse(0.0) * 1.33 * relicsYield.getMaxHealth()
+                    + Optional.ofNullable(relicsAttributes.getMaxDefense()).orElse(0.0) * 1.06 * relicsYield.getMaxDefense();
+                if (relicsDTO.getType().equals(EquipType.DRESS) &&
+                    (relicsAttributes.getAppendProp().equals(AppendProp.CRITICAL_STRIKE_DAMAGE)) || relicsAttributes.getAppendProp().equals(AppendProp.CRITICAL_STRIKE_RATE)) {
+                    // 如果是暴击率或者暴击头，加20分
+                    score += 20;
+                }
+                relicsDTO.setScore(score);
+                if (score > tmpScore.get()) {
+                    tmpRelicsDTO.set(relicsDTO);
+                    tmpScore.set(score);
+                }
+            });
+            return tmpRelicsDTO.get();
+        } catch (Exception e) {
+            logger.error("calculateRelicsScore", e);
+            return null;
         }
-        return score;
     }
 
     /**
@@ -81,7 +100,6 @@ public class YuanServcie {
                     }
                 });
             });
-            // TODO: 2023/9/13 做去重操作
             return relicsDTOS;
         } catch (Exception e) {
             logger.error("loadRelicsInfos", e);
@@ -94,13 +112,17 @@ public class YuanServcie {
      *
      * @return
      */
-    public List<RelicsDTO> getRelicsByUid(Long uid) {
+    public List<RelicsDTO> queryRelics(Long uid) {
         if (uid == null) {
             return null;
         }
+        RelicsParam relicsParam = new RelicsParam();
+        relicsParam.createCriteria().andUidEqualTo(uid);
+        return queryRelics(relicsParam);
+    }
+
+    public List<RelicsDTO> queryRelics(RelicsParam relicsParam) {
         try {
-            RelicsParam relicsParam = new RelicsParam();
-            relicsParam.createCriteria().andUidEqualTo(uid);
             return relicsMapper.selectByExample(relicsParam).stream().map(YuanConverter::convert).collect(Collectors.toList());
         } catch (Exception e) {
             logger.error("getRelicsByUid", e);
@@ -114,18 +136,24 @@ public class YuanServcie {
      * @param uid
      * @param relicsDTOS
      */
-    public void insertRelics(Long uid, List<RelicsDTO> relicsDTOS) {
-        if (relicsDTOS == null || relicsDTOS.isEmpty()) {
-            return;
+    public boolean insertRelics(Long uid, List<RelicsDTO> relicsDTOS) {
+        try {
+            if (relicsDTOS == null || relicsDTOS.isEmpty()) {
+                return true;
+            }
+            Date date = new Date();
+            List<Relics> relicsList = relicsDTOS.stream().map(relicsDTO -> {
+                Relics relics = YuanConverter.convert(uid, relicsDTO);
+                relics.setGmtCreate(date);
+                relics.setGmtModified(date);
+                return relics;
+            }).collect(Collectors.toList());
+            int result = relicsMapper.insertAll(relicsList);
+            return result > 0;
+        } catch (Exception e) {
+            logger.error("insertRelics", e);
+            return false;
         }
-        Date date = new Date();
-        List<Relics> relicsList = relicsDTOS.stream().map(relicsDTO -> {
-            Relics relics = YuanConverter.convert(uid, relicsDTO);
-            relics.setGmtCreate(date);
-            relics.setGmtModified(date);
-            return relics;
-        }).collect(Collectors.toList());
-        relicsMapper.insertAll(relicsList);
     }
 
     /**
@@ -134,21 +162,30 @@ public class YuanServcie {
      * @param uid
      * @param relicsDTOS
      */
-    public void updateRelics(Long uid, List<RelicsDTO> relicsDTOS) {
-        if (relicsDTOS == null || relicsDTOS.isEmpty()) {
-            return;
+    public boolean updateRelics(Long uid, List<RelicsDTO> relicsDTOS) {
+        try {
+            if (relicsDTOS == null || relicsDTOS.isEmpty()) {
+                return true;
+            }
+            Date date = new Date();
+            List<Relics> relicsList = relicsDTOS.stream().map(relicsDTO -> {
+                Relics relics = YuanConverter.convert(uid, relicsDTO);
+                relics.setGmtCreate(date);
+                relics.setGmtModified(date);
+                return relics;
+            }).collect(Collectors.toList());
+            for (Relics relics : relicsList) {
+                RelicsParam param = new RelicsParam();
+                param.createCriteria().andIdEqualTo(relics.getId());
+                int result = relicsMapper.updateByExample(relics, param);
+                if (result == 0) {
+                    return false;
+                }
+            }
+            return true;
+        } catch (Exception e) {
+            logger.error("insertRelics", e);
+            return false;
         }
-        Date date = new Date();
-        List<Relics> relicsList = relicsDTOS.stream().map(relicsDTO -> {
-            Relics relics = YuanConverter.convert(uid, relicsDTO);
-            relics.setGmtCreate(date);
-            relics.setGmtModified(date);
-            return relics;
-        }).collect(Collectors.toList());
-        relicsList.forEach(relics -> {
-            RelicsParam param = new RelicsParam();
-            param.createCriteria().andIdEqualTo(relics.getId());
-            relicsMapper.updateByExample(relics, param);
-        });
     }
 }

@@ -16,6 +16,11 @@ public enum ResultCode {
      * 参数错误
      */
     PARAM_ERROR("PARAM_ERROR", "参数错误"),
+
+    /**
+     * 系统异常
+     */
+    SYSTEM_ERROR("SYSTEM_ERROR", "系统异常"),
     ;
 
     private String code;

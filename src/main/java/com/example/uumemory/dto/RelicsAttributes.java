@@ -1,13 +1,13 @@
 package com.example.uumemory.dto;
 
 import java.util.Objects;
-import java.util.Optional;
 
 import com.example.uumemory.constants.AppendProp;
 import org.apache.commons.lang3.StringUtils;
 
 public class RelicsAttributes {
     private AppendProp appendProp;
+    private String mainType;
     private Double mainValue;
     private Double maxHealth;
     private Double minHealth;
@@ -20,11 +20,21 @@ public class RelicsAttributes {
     private Double proficients;
     private Double chargingRate;
 
-    public AppendProp getMainType() {
-        return appendProp;
+    public String getMainType() {
+        return mainType;
     }
 
-    public void setMainType(AppendProp appendProp) {
+    public void setMainType(String mainType) {
+        this.mainType = mainType;
+    }
+
+    public AppendProp getAppendProp() {
+        return appendProp;
+    }
+    public String getAppendPropName() {
+        return appendProp.getDisplayName();
+    }
+    public void setAppendProp(AppendProp appendProp) {
         this.appendProp = appendProp;
     }
 

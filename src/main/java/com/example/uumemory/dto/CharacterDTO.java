@@ -1,19 +1,19 @@
 package com.example.uumemory.dto;
 
-public class CharaterDTO {
-    private String name;
+public class CharacterDTO {
+    private Long characterId;
     private RelicsAttributes relicsAttributes;
 
-    public String getName() {
-        return name;
+    public Long getCharacterId() {
+        return characterId;
     }
 
     public RelicsAttributes getRelicsAttributes() {
         return relicsAttributes;
     }
 
-    public CharaterDTO(String name, RelicsAttributes relicsAttributes) {
-        this.name = name;
+    public CharacterDTO(Long characterId, RelicsAttributes relicsAttributes) {
+        this.characterId = characterId;
         this.relicsAttributes = relicsAttributes;
     }
 }

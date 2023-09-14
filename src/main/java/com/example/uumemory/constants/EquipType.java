@@ -8,9 +8,9 @@ import org.apache.commons.lang3.StringUtils;
 public enum EquipType {
     BRACER("EQUIP_BRACER", "生之花"),
     NECKLACE( "EQUIP_NECKLACE", "死之羽"),
-    DRESS( "EQUIP_DRESS", "理之冠"),
     SHOES( "EQUIP_SHOES", "时之沙"),
-    RING( "EQUIP_RING", "空之杯");
+    RING( "EQUIP_RING", "空之杯"),
+    DRESS( "EQUIP_DRESS", "理之冠");
 
     // enka对应的名字
     private String name;

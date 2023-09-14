@@ -32,16 +32,36 @@ public class YuanController {
         return "hello world";
     }
 
-    @RequestMapping(value = "/loadRelic", method = RequestMethod.GET)
-    public Result<String> loadRelic(Long uid) {
+    /**
+     * 保存圣遗物信息
+     *
+     * @param uid
+     * @return
+     */
+    @RequestMapping(value = "/saveRelic", method = RequestMethod.GET)
+    public Result<String> saveRelic(Long uid) {
         List<RelicsDTO> newDTOs = yuanServcie.loadRelicsInfos(uid);
         if (newDTOs == null || newDTOs.isEmpty()) {
             return Result.fail(ResultCode.PARAM_ERROR);
         }
         List<RelicsDTO> lastDTOs = Optional.ofNullable(yuanServcie.getRelicsByUid(uid)).orElse(new ArrayList<>());
-        List<RelicsDTO> resultDtos = newDTOs.stream()
-            .filter(newDTO -> lastDTOs.stream().noneMatch(lastDTO -> lastDTO.isEqual(newDTO)))
-            .collect(Collectors.toList());
-        return Result.success(JSON.toJSONString(resultDtos));
+        // 新的圣遗物需要插入
+        List<RelicsDTO> insertDTOs = new ArrayList<>();
+        // 老的需要更新信息的圣遗物
+        List<RelicsDTO> updateDTOs = new ArrayList<>();
+        newDTOs.stream()
+            .forEach(newDTO -> {
+                Optional op = lastDTOs.stream().filter(lastDTO -> lastDTO.isEqual(newDTO)).findFirst();
+                if(!op.isPresent()){
+                    // 没有相同的圣遗物
+                    insertDTOs.add(newDTO);
+                }else if(!newDTO.getCharacterId().equals(((RelicsDTO)op.get()).getCharacterId())){
+                    // 任务id不同
+                    updateDTOs.add(newDTO);
+                }
+            });
+        yuanServcie.insertRelics(uid, insertDTOs);
+        yuanServcie.updateRelics(uid, updateDTOs);
+        return Result.success(JSON.toJSONString(lastDTOs));
     }
 }

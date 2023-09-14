@@ -63,4 +63,6 @@ public interface RelicsMapper {
      * @mbg.generated Thu Sep 14 10:24:21 CST 2023
      */
     int updateByExample(@Param("record") Relics record, @Param("example") RelicsParam example);
+
+    int insertAll(List<Relics> records);
 }

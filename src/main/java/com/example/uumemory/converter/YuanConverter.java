@@ -9,7 +9,7 @@ import com.example.uumemory.dto.RelicsDTO;
 import com.example.uumemory.entity.Relics;
 
 public class YuanConverter {
-    public static RelicsDTO convertFlat2Relics(FlatDTO flatDTO) {
+    public static RelicsDTO convert(FlatDTO flatDTO) {
         RelicsDTO relicsDTO = new RelicsDTO();
         relicsDTO.setType(EquipType.getType(flatDTO.getEquipType()));
         relicsDTO.setGroupType(Constants.LOC_INFO.getString(flatDTO.getSetNameTextMapHash()));
@@ -62,7 +62,28 @@ public class YuanConverter {
         return relicsDTO;
     }
 
-    public static RelicsDTO convert2DTO(Relics relics){
+    public static Relics convert(Long uid, RelicsDTO relicsDTO) {
+        Relics relics = new Relics();
+        relics.setUid(uid);
+        relics.setCharacterId(relicsDTO.getCharacterId());
+        relics.setType(relicsDTO.getType().getName());
+        relics.setGroupType(relicsDTO.getGroupType());
+        relics.setMainType(relicsDTO.getAttributes().getMainType().getName());
+        relics.setMainValue(relicsDTO.getAttributes().getMainValue());
+        relics.setMaxHealth(relicsDTO.getAttributes().getMaxHealth());
+        relics.setMinHealth(relicsDTO.getAttributes().getMinHealth());
+        relics.setMaxAttack(relicsDTO.getAttributes().getMaxAttack());
+        relics.setMinAttack(relicsDTO.getAttributes().getMinAttack());
+        relics.setMaxDefense(relicsDTO.getAttributes().getMaxDefense());
+        relics.setMinDefense(relicsDTO.getAttributes().getMinDefense());
+        relics.setCriticalStrikeRate(relicsDTO.getAttributes().getCriticalStrikeRate());
+        relics.setCriticalStrikeDamage(relicsDTO.getAttributes().getCriticalStrikeDamage());
+        relics.setProficients(relicsDTO.getAttributes().getProficients());
+        relics.setChargingRate(relicsDTO.getAttributes().getChargingRate());
+        return relics;
+    }
+
+    public static RelicsDTO convert(Relics relics){
         RelicsDTO relicsDTO = new RelicsDTO();
         relicsDTO.setType(EquipType.getType(relics.getType()));
         relicsDTO.setGroupType(relics.getGroupType());

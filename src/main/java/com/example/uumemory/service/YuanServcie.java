@@ -1,6 +1,7 @@
 package com.example.uumemory.service;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -14,6 +15,7 @@ import com.example.uumemory.converter.YuanConverter;
 import com.example.uumemory.dto.EnKaDO;
 import com.example.uumemory.dto.RelicsAttributes;
 import com.example.uumemory.dto.RelicsDTO;
+import com.example.uumemory.entity.Relics;
 import com.example.uumemory.entity.RelicsParam;
 import com.example.uumemory.mappers.RelicsMapper;
 import org.apache.commons.lang3.StringUtils;
@@ -73,7 +75,7 @@ public class YuanServcie {
             enKaDO.getAvatarInfoList().stream().forEach(avatarInfoListDTO -> {
                 avatarInfoListDTO.getEquipList().forEach(equipListDTO -> {
                     if (StringUtils.equals(equipListDTO.getFlat().getItemType(), "ITEM_RELIQUARY")) {
-                        RelicsDTO relicsDTO = YuanConverter.convertFlat2Relics(equipListDTO.getFlat());
+                        RelicsDTO relicsDTO = YuanConverter.convert(equipListDTO.getFlat());
                         relicsDTO.setCharacterId((long)avatarInfoListDTO.getAvatarId());
                         relicsDTOS.add(relicsDTO);
                     }
@@ -89,30 +91,64 @@ public class YuanServcie {
 
     /**
      * 从数据库获取当前uid的所有圣遗物
+     *
      * @return
      */
-    public List<RelicsDTO> getRelicsByUid(Long uid){
+    public List<RelicsDTO> getRelicsByUid(Long uid) {
         if (uid == null) {
             return null;
         }
         try {
             RelicsParam relicsParam = new RelicsParam();
             relicsParam.createCriteria().andUidEqualTo(uid);
-            return relicsMapper.selectByExample(relicsParam).stream().map(YuanConverter::convert2DTO).collect(Collectors.toList());
-        }catch (Exception e){
+            return relicsMapper.selectByExample(relicsParam).stream().map(YuanConverter::convert).collect(Collectors.toList());
+        } catch (Exception e) {
             logger.error("getRelicsByUid", e);
         }
         return null;
     }
 
-    //
-    //public void insertRelics() {
-    //    Relics relics = new Relics();
-    //    relics.setUid(1L);
-    //    relics.setType(EquipType.BRACER.getName());
-    //    relics.setGroupType(GroupType.BRACER.getName());
-    //    relics.setMainType(AppendProp.CRITICAL_STRIKE_RATE.getName());
-    //    relics.setMainValue(100.0);
-    //    relicsMapper.insert(relics);
-    //}
+    /**
+     * 批量插入圣遗物
+     *
+     * @param uid
+     * @param relicsDTOS
+     */
+    public void insertRelics(Long uid, List<RelicsDTO> relicsDTOS) {
+        if (relicsDTOS == null || relicsDTOS.isEmpty()) {
+            return;
+        }
+        Date date = new Date();
+        List<Relics> relicsList = relicsDTOS.stream().map(relicsDTO -> {
+            Relics relics = YuanConverter.convert(uid, relicsDTO);
+            relics.setGmtCreate(date);
+            relics.setGmtModified(date);
+            return relics;
+        }).collect(Collectors.toList());
+        relicsMapper.insertAll(relicsList);
+    }
+
+    /**
+     * 批量更新圣遗物
+     *
+     * @param uid
+     * @param relicsDTOS
+     */
+    public void updateRelics(Long uid, List<RelicsDTO> relicsDTOS) {
+        if (relicsDTOS == null || relicsDTOS.isEmpty()) {
+            return;
+        }
+        Date date = new Date();
+        List<Relics> relicsList = relicsDTOS.stream().map(relicsDTO -> {
+            Relics relics = YuanConverter.convert(uid, relicsDTO);
+            relics.setGmtCreate(date);
+            relics.setGmtModified(date);
+            return relics;
+        }).collect(Collectors.toList());
+        relicsList.forEach(relics -> {
+            RelicsParam param = new RelicsParam();
+            param.createCriteria().andIdEqualTo(relics.getId());
+            relicsMapper.updateByExample(relics, param);
+        });
+    }
 }

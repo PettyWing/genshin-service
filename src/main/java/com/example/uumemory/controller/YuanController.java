@@ -1,6 +1,9 @@
 package com.example.uumemory.controller;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
 
@@ -31,10 +34,14 @@ public class YuanController {
 
     @RequestMapping(value = "/loadRelic", method = RequestMethod.GET)
     public Result<String> loadRelic(Long uid) {
-        List<RelicsDTO> dtos = yuanServcie.loadRelicsInfos(uid);
-        if (dtos == null || dtos.isEmpty()) {
+        List<RelicsDTO> newDTOs = yuanServcie.loadRelicsInfos(uid);
+        if (newDTOs == null || newDTOs.isEmpty()) {
             return Result.fail(ResultCode.PARAM_ERROR);
         }
-        return Result.success(JSON.toJSONString(dtos));
+        List<RelicsDTO> lastDTOs = Optional.ofNullable(yuanServcie.getRelicsByUid(uid)).orElse(new ArrayList<>());
+        List<RelicsDTO> resultDtos = newDTOs.stream()
+            .filter(newDTO -> lastDTOs.stream().noneMatch(lastDTO -> lastDTO.isEqual(newDTO)))
+            .collect(Collectors.toList());
+        return Result.success(JSON.toJSONString(resultDtos));
     }
 }

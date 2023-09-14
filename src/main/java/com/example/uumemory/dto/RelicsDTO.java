@@ -2,10 +2,12 @@ package com.example.uumemory.dto;
 
 import com.example.uumemory.constants.EquipType;
 import com.example.uumemory.constants.AppendProp;
+import org.apache.commons.lang3.StringUtils;
 
 public class RelicsDTO {
     private EquipType equipType;
     private String groupType;
+    private Long characterId;
     private RelicsAttributes relicsAttributes;
 
     public EquipType getType() {
@@ -32,6 +34,14 @@ public class RelicsDTO {
         this.relicsAttributes = relicsAttributes;
     }
 
+    public Long getCharacterId() {
+        return characterId;
+    }
+
+    public void setCharacterId(Long characterId) {
+        this.characterId = characterId;
+    }
+
     public RelicsDTO() {
     }
 
@@ -39,6 +49,19 @@ public class RelicsDTO {
         this.equipType = equipType;
         this.groupType = groupType;
         this.relicsAttributes = new RelicsAttributes(appendProp, mainValue);
+    }
+
+    public boolean isEqual(RelicsDTO other) {
+        if (!StringUtils.equals(equipType.getName(), other.equipType.getName())) {
+            return false;
+        }
+        if (!StringUtils.equals(groupType, other.groupType)) {
+            return false;
+        }
+        if(!relicsAttributes.isEqual(other.relicsAttributes)){
+            return false;
+        }
+        return true;
     }
 }
 

@@ -1,20 +1,24 @@
 package com.example.uumemory.dto;
 
+import java.util.Objects;
+import java.util.Optional;
+
 import com.example.uumemory.constants.AppendProp;
+import org.apache.commons.lang3.StringUtils;
 
 public class RelicsAttributes {
     private AppendProp appendProp;
-    private double mainValue;
-    private double maxHealth;
-    private double minHealth;
-    private double maxAttack;
-    private double minAttack;
-    private double maxDefense;
-    private double minDefense;
-    private double criticalStrikeRate;
-    private double criticalStrikeDamage;
-    private double proficients;
-    private double chargingRate;
+    private Double mainValue;
+    private Double maxHealth;
+    private Double minHealth;
+    private Double maxAttack;
+    private Double minAttack;
+    private Double maxDefense;
+    private Double minDefense;
+    private Double criticalStrikeRate;
+    private Double criticalStrikeDamage;
+    private Double proficients;
+    private Double chargingRate;
 
     public AppendProp getMainType() {
         return appendProp;
@@ -24,98 +28,98 @@ public class RelicsAttributes {
         this.appendProp = appendProp;
     }
 
-    public double getMainValue() {
+    public Double getMainValue() {
         return mainValue;
     }
 
-    public void setMainValue(double mainValue) {
+    public void setMainValue(Double mainValue) {
         this.mainValue = mainValue;
     }
 
-    public double getMaxHealth() {
+    public Double getMaxHealth() {
         return maxHealth;
     }
 
-    public void setMaxHealth(double maxHealth) {
+    public void setMaxHealth(Double maxHealth) {
         this.maxHealth = maxHealth;
     }
 
-    public double getMinHealth() {
+    public Double getMinHealth() {
         return minHealth;
     }
 
-    public void setMinHealth(double minHealth) {
+    public void setMinHealth(Double minHealth) {
         this.minHealth = minHealth;
     }
 
-    public double getMaxAttack() {
+    public Double getMaxAttack() {
         return maxAttack;
     }
 
-    public void setMaxAttack(double maxAttack) {
+    public void setMaxAttack(Double maxAttack) {
         this.maxAttack = maxAttack;
     }
 
-    public double getMinAttack() {
+    public Double getMinAttack() {
         return minAttack;
     }
 
-    public void setMinAttack(double minAttack) {
+    public void setMinAttack(Double minAttack) {
         this.minAttack = minAttack;
     }
 
-    public double getMaxDefense() {
+    public Double getMaxDefense() {
         return maxDefense;
     }
 
-    public void setMaxDefense(double maxDefense) {
+    public void setMaxDefense(Double maxDefense) {
         this.maxDefense = maxDefense;
     }
 
-    public double getMinDefense() {
+    public Double getMinDefense() {
         return minDefense;
     }
 
-    public void setMinDefense(double minDefense) {
+    public void setMinDefense(Double minDefense) {
         this.minDefense = minDefense;
     }
 
-    public double getCriticalStrikeRate() {
+    public Double getCriticalStrikeRate() {
         return criticalStrikeRate;
     }
 
-    public void setCriticalStrikeRate(double criticalStrikeRate) {
+    public void setCriticalStrikeRate(Double criticalStrikeRate) {
         this.criticalStrikeRate = criticalStrikeRate;
     }
 
-    public double getCriticalStrikeDamage() {
+    public Double getCriticalStrikeDamage() {
         return criticalStrikeDamage;
     }
 
-    public void setCriticalStrikeDamage(double criticalStrikeDamage) {
+    public void setCriticalStrikeDamage(Double criticalStrikeDamage) {
         this.criticalStrikeDamage = criticalStrikeDamage;
     }
 
-    public double getProficients() {
+    public Double getProficients() {
         return proficients;
     }
 
-    public void setProficients(double proficients) {
+    public void setProficients(Double proficients) {
         this.proficients = proficients;
     }
 
-    public double getChargingRate() {
+    public Double getChargingRate() {
         return chargingRate;
     }
 
-    public void setChargingRate(double chargingRate) {
+    public void setChargingRate(Double chargingRate) {
         this.chargingRate = chargingRate;
     }
 
     public RelicsAttributes() {
     }
 
-    public RelicsAttributes(AppendProp appendProp, double mainValue) {
+    public RelicsAttributes(AppendProp appendProp, Double mainValue) {
         this.appendProp = appendProp;
         this.mainValue = mainValue;
     }
@@ -123,8 +127,8 @@ public class RelicsAttributes {
     /**
      * 构建圣遗物的收益率
      */
-    public RelicsAttributes(double maxHealth, double maxAttack, double maxDefense,
-        double criticalStrikeRate, double criticalStrikeDamage, double proficients, double chargingRate) {
+    public RelicsAttributes(Double maxHealth, Double maxAttack, Double maxDefense,
+        Double criticalStrikeRate, Double criticalStrikeDamage, Double proficients, Double chargingRate) {
         this.maxHealth = maxHealth;
         this.maxAttack = maxAttack;
         this.maxDefense = maxDefense;
@@ -132,5 +136,45 @@ public class RelicsAttributes {
         this.criticalStrikeDamage = criticalStrikeDamage;
         this.proficients = proficients;
         this.chargingRate = chargingRate;
+    }
+
+    public boolean isEqual(RelicsAttributes other) {
+        if (!StringUtils.equals(appendProp.getName(), other.appendProp.getName())) {
+            return false;
+        }
+        if (!Objects.equals(mainValue, other.mainValue)) {
+            return false;
+        }
+        if (!Objects.equals(maxHealth, other.maxHealth)) {
+            return false;
+        }
+        if (!Objects.equals(minHealth, other.minHealth)) {
+            return false;
+        }
+        if (!Objects.equals(maxAttack, other.maxAttack)) {
+            return false;
+        }
+        if (!Objects.equals(minAttack, other.minAttack)) {
+            return false;
+        }
+        if (!Objects.equals(maxDefense, other.maxDefense)) {
+            return false;
+        }
+        if (!Objects.equals(minDefense, other.minDefense)) {
+            return false;
+        }
+        if (!Objects.equals(criticalStrikeRate, other.criticalStrikeRate)) {
+            return false;
+        }
+        if (!Objects.equals(criticalStrikeDamage, other.criticalStrikeDamage)) {
+            return false;
+        }
+        if (!Objects.equals(proficients, other.proficients)) {
+            return false;
+        }
+        if (!Objects.equals(chargingRate, other.chargingRate)) {
+            return false;
+        }
+        return true;
     }
 }

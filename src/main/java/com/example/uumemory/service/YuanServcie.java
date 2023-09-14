@@ -2,6 +2,7 @@ package com.example.uumemory.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
 
@@ -13,7 +14,7 @@ import com.example.uumemory.converter.YuanConverter;
 import com.example.uumemory.dto.EnKaDO;
 import com.example.uumemory.dto.RelicsAttributes;
 import com.example.uumemory.dto.RelicsDTO;
-import com.example.uumemory.entity.Relics;
+import com.example.uumemory.entity.RelicsParam;
 import com.example.uumemory.mappers.RelicsMapper;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -72,7 +73,9 @@ public class YuanServcie {
             enKaDO.getAvatarInfoList().stream().forEach(avatarInfoListDTO -> {
                 avatarInfoListDTO.getEquipList().forEach(equipListDTO -> {
                     if (StringUtils.equals(equipListDTO.getFlat().getItemType(), "ITEM_RELIQUARY")) {
-                        relicsDTOS.add(YuanConverter.convertFlat2Relics(equipListDTO.getFlat()));
+                        RelicsDTO relicsDTO = YuanConverter.convertFlat2Relics(equipListDTO.getFlat());
+                        relicsDTO.setCharacterId((long)avatarInfoListDTO.getAvatarId());
+                        relicsDTOS.add(relicsDTO);
                     }
                 });
             });
@@ -84,14 +87,32 @@ public class YuanServcie {
         return null;
     }
 
-
-    public void insertRelics() {
-        Relics relics = new Relics();
-        relics.setUid(1L);
-        relics.setType(EquipType.BRACER.getName());
-        relics.setGroupType(GroupType.BRACER.getName());
-        relics.setMainType(AppendProp.CRITICAL_STRIKE_RATE.getName());
-        relics.setMainValue(100.0);
-        relicsMapper.insert(relics);
+    /**
+     * 从数据库获取当前uid的所有圣遗物
+     * @return
+     */
+    public List<RelicsDTO> getRelicsByUid(Long uid){
+        if (uid == null) {
+            return null;
+        }
+        try {
+            RelicsParam relicsParam = new RelicsParam();
+            relicsParam.createCriteria().andUidEqualTo(uid);
+            return relicsMapper.selectByExample(relicsParam).stream().map(YuanConverter::convert2DTO).collect(Collectors.toList());
+        }catch (Exception e){
+            logger.error("getRelicsByUid", e);
+        }
+        return null;
     }
+
+    //
+    //public void insertRelics() {
+    //    Relics relics = new Relics();
+    //    relics.setUid(1L);
+    //    relics.setType(EquipType.BRACER.getName());
+    //    relics.setGroupType(GroupType.BRACER.getName());
+    //    relics.setMainType(AppendProp.CRITICAL_STRIKE_RATE.getName());
+    //    relics.setMainValue(100.0);
+    //    relicsMapper.insert(relics);
+    //}
 }

@@ -6,12 +6,14 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.annotation.Resource;
 
 import com.alibaba.fastjson.JSON;
 
 import com.example.uumemory.constants.AppendProp;
+import com.example.uumemory.constants.Constants;
 import com.example.uumemory.constants.EquipType;
 import com.example.uumemory.converter.YuanConverter;
 import com.example.uumemory.dto.EnKaDO;
@@ -41,13 +43,17 @@ public class YuanServcie {
      * @param characterId 人物
      * @param relicsDTOs  圣遗物数据
      */
-    public RelicsDTO calculateRelicsScore(Long characterId, List<RelicsDTO> relicsDTOs) {
+    public List<RelicsDTO> calculateRelicsScore(Long characterId, List<RelicsDTO> relicsDTOs, String groupType) {
         try {
             if (relicsDTOs == null || relicsDTOs.isEmpty()) {
                 return null;
             }
-            AtomicReference<Double> tmpScore = new AtomicReference<>((double)0);
-            AtomicReference<RelicsDTO> tmpRelicsDTO = new AtomicReference<>();
+            // 任意的圣遗物
+            AtomicReference<Double> tmpRandomScore = new AtomicReference<>((double)0);
+            AtomicReference<RelicsDTO> tmpRandomRelicsDTO = new AtomicReference<>();
+            // 符合类型的圣遗物
+            AtomicReference<Double> tmpTargetScore = new AtomicReference<>((double)0);
+            AtomicReference<RelicsDTO> tmpTargetRelicsDTO = new AtomicReference<>();
             relicsDTOs.forEach(relicsDTO -> {
                 RelicsAttributes relicsAttributes = relicsDTO.getAttributes();
                 RelicsAttributes relicsYield = CHARACTER_DTOS.get(characterId).getRelicsAttributes();
@@ -64,12 +70,16 @@ public class YuanServcie {
                     score += 20;
                 }
                 relicsDTO.setScore(score);
-                if (score > tmpScore.get()) {
-                    tmpRelicsDTO.set(relicsDTO);
-                    tmpScore.set(score);
+                if (score > tmpRandomScore.get()) {
+                    tmpRandomRelicsDTO.set(relicsDTO);
+                    tmpRandomScore.set(score);
+                }
+                if (StringUtils.equals(Constants.LOC_INFO.getString(groupType), relicsDTO.getGroupType()) && score > tmpTargetScore.get()) {
+                    tmpTargetRelicsDTO.set(relicsDTO);
+                    tmpTargetScore.set(score);
                 }
             });
-            return tmpRelicsDTO.get();
+            return Stream.of(tmpRandomRelicsDTO.get(),tmpTargetRelicsDTO.get()).collect(Collectors.toList());
         } catch (Exception e) {
             logger.error("calculateRelicsScore", e);
             return null;

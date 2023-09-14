@@ -6,6 +6,9 @@ import java.util.Optional;
 
 import javax.annotation.Resource;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+
 import com.example.uumemory.constants.EquipType;
 import com.example.uumemory.constants.ResultCode;
 import com.example.uumemory.dto.RelicsDTO;
@@ -87,29 +90,46 @@ public class YuanController {
      * 计算角色的圣遗物评分
      *
      * @param req
-     * @return
+     * @returnx
      */
     @RequestMapping(value = "/calculateCharacterRelics", method = RequestMethod.POST)
     public Result<List<RelicsDTO>> calculateCharacterRelics(@RequestBody CalculateReq req) {
         if (req == null || req.getUid() == null || req.getCharacterId() == null) {
             return Result.fail(ResultCode.PARAM_ERROR);
         }
-        List<RelicsDTO> resultDTOs = new ArrayList<>();
+        List<RelicsDTO> randomRelicsDTOs = new ArrayList<>();
+        List<RelicsDTO> targetRelicsDTOs = new ArrayList<>();
+        JSONObject equipTypes = req.getEquipTypes() != null ? JSON.parseObject(JSON.toJSONString(req.getEquipTypes())) : null;
         for (EquipType equipType : EquipType.values()) {
             RelicsParam relicsParam = new RelicsParam();
             RelicsParam.Criteria criteria = relicsParam.createCriteria().andUidEqualTo(req.getUid()).andTypeEqualTo(equipType.getName());
-            if (req.getEquipTypes() != null && !req.getEquipTypes().isEmpty()) {
-                List<String> mainTypes = req.getEquipTypes().get(equipType.getName());
+            if (equipTypes != null && equipTypes.containsKey(equipType.getName())) {
+                List<String> mainTypes = equipTypes.getJSONArray(equipType.getName()).toJavaList(String.class);
                 if (mainTypes != null && !mainTypes.isEmpty()) {
                     criteria.andMainTypeIn(mainTypes);
                 }
             }
             List<RelicsDTO> relics = yuanServcie.queryRelics(relicsParam);
-            RelicsDTO result = yuanServcie.calculateRelicsScore(req.getCharacterId(), relics);
-            if (result != null) {
-                resultDTOs.add(result);
+            List<RelicsDTO> result = Optional.ofNullable(yuanServcie.calculateRelicsScore(req.getCharacterId(), relics, req.getGroupType())).orElse(new ArrayList<>());
+            randomRelicsDTOs.add(result.isEmpty() ? null : result.get(0));
+            targetRelicsDTOs.add(result.size() > 1 ? result.get(1) : null);
+        }
+        double currentScore = 0;
+        List<RelicsDTO> result = new ArrayList<>();
+        for (int i = 0; i < randomRelicsDTOs.size(); i++) {
+            double score = randomRelicsDTOs.get(0) == null ? 0 : randomRelicsDTOs.get(i).getScore();
+            List<RelicsDTO> tmp = new ArrayList<>(targetRelicsDTOs);
+            tmp.remove(i);
+            for (RelicsDTO relicsDTO : tmp) {
+                score += relicsDTO == null ? 0 : relicsDTO.getScore();
+            }
+            if(score>currentScore){
+                currentScore = score;
+                result.clear();
+                result.add(randomRelicsDTOs.get(i));
+                result.addAll(tmp);
             }
         }
-        return Result.success(resultDTOs);
+        return Result.success(result);
     }
 }

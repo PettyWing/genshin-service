@@ -5,22 +5,34 @@ import java.util.List;
 import com.example.uumemory.dto.RelicsDTO;
 
 public class CalculateResp {
-    private double score;
-    private List<RelicsDTO> relicsDTOS;
+    private List<CharacterResp> characters;
 
-    public double getScore() {
-        return score;
+    public List<CharacterResp> getCharacters() {
+        return characters;
     }
 
-    public void setScore(double score) {
-        this.score = score;
+    public void setCharacters(List<CharacterResp> characters) {
+        this.characters = characters;
     }
 
-    public List<RelicsDTO> getRelicsDTOS() {
-        return relicsDTOS;
-    }
+    public static class CharacterResp{
+        private double score;
+        private List<RelicsDTO> relicsDTOS;
 
-    public void setRelicsDTOS(List<RelicsDTO> relicsDTOS) {
-        this.relicsDTOS = relicsDTOS;
+        public double getScore() {
+            return score;
+        }
+
+        public void setScore(double score) {
+            this.score = score;
+        }
+
+        public List<RelicsDTO> getRelicsDTOS() {
+            return relicsDTOS;
+        }
+
+        public void setRelicsDTOS(List<RelicsDTO> relicsDTOS) {
+            this.relicsDTOS = relicsDTOS;
+        }
     }
 }

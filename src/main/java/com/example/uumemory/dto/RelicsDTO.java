@@ -6,6 +6,7 @@ import com.example.uumemory.constants.AppendProp;
 import org.apache.commons.lang3.StringUtils;
 
 public class RelicsDTO {
+    private Long id;
     private EquipType equipType;
     private String groupType;
     private Long characterId;
@@ -59,6 +60,14 @@ public class RelicsDTO {
 
     public String getCharacterName() {
         return Constants.LOC_INFO.getString(String.valueOf(characterId));
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public RelicsDTO() {

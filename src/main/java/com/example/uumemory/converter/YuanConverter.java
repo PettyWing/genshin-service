@@ -94,6 +94,7 @@ public class YuanConverter {
             return null;
         }
         RelicsDTO relicsDTO = new RelicsDTO();
+        relicsDTO.setId(relics.getId());
         relicsDTO.setType(EquipType.getType(relics.getType()));
         relicsDTO.setGroupType(relics.getGroupType());
         relicsDTO.setCharacterId(relics.getCharacterId());

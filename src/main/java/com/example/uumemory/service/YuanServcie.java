@@ -181,6 +181,7 @@ public class YuanServcie {
             Date date = new Date();
             List<Relics> relicsList = relicsDTOS.stream().map(relicsDTO -> {
                 Relics relics = YuanConverter.convert(uid, relicsDTO);
+                relics.setId(relicsDTO.getId());
                 relics.setGmtCreate(date);
                 relics.setGmtModified(date);
                 return relics;

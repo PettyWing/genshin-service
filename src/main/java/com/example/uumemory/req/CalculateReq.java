@@ -9,28 +9,41 @@ public class CalculateReq {
 
     @JSONField(name = "uid")
     private Long uid;
-    @JSONField(name = "characterId")
-    private String characterId;
-    @JSONField(name = "equipTypes")
-    private EquipTypesDTO equipTypes;
-    @JSONField(name = "groupType")
-    private String groupType;
+    @JSONField(name = "characters")
+    List<CharacterInfo> characters;
 
     public Long getUid() {return uid;}
 
     public void setUid(Long uid) {this.uid = uid;}
 
-    public String getCharacterId() {return characterId;}
+    public List<CharacterInfo> getCharacters() {
+        return characters;
+    }
 
-    public void setCharacterId(String characterId) {this.characterId = characterId;}
+    public void setCharacters(List<CharacterInfo> characters) {
+        this.characters = characters;
+    }
 
-    public EquipTypesDTO getEquipTypes() {return equipTypes;}
+    public static class CharacterInfo{
+        @JSONField(name = "characterId")
+        private String characterId;
+        @JSONField(name = "equipTypes")
+        private EquipTypesDTO equipTypes;
+        @JSONField(name = "groupType")
+        private String groupType;
 
-    public void setEquipTypes(EquipTypesDTO equipTypes) {this.equipTypes = equipTypes;}
+        public String getCharacterId() {return characterId;}
 
-    public String getGroupType() {return groupType;}
+        public void setCharacterId(String characterId) {this.characterId = characterId;}
 
-    public void setGroupType(String groupType) {this.groupType = groupType;}
+        public EquipTypesDTO getEquipTypes() {return equipTypes;}
+
+        public void setEquipTypes(EquipTypesDTO equipTypes) {this.equipTypes = equipTypes;}
+
+        public String getGroupType() {return groupType;}
+
+        public void setGroupType(String groupType) {this.groupType = groupType;}
+    }
 
     public static class EquipTypesDTO {
         @JSONField(name = "equipShoes")

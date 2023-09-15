@@ -15,7 +15,9 @@ import com.example.uumemory.dto.RelicsDTO;
 import com.example.uumemory.dto.Result;
 import com.example.uumemory.entity.RelicsParam;
 import com.example.uumemory.req.CalculateReq;
+import com.example.uumemory.resp.CalculateResp;
 import com.example.uumemory.service.YuanServcie;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -93,10 +95,11 @@ public class YuanController {
      * @returnx
      */
     @RequestMapping(value = "/calculateCharacterRelics", method = RequestMethod.POST)
-    public Result<List<RelicsDTO>> calculateCharacterRelics(@RequestBody CalculateReq req) {
-        if (req == null || req.getUid() == null || req.getCharacterId() == null) {
+    public Result<CalculateResp> calculateCharacterRelics(@RequestBody CalculateReq req) {
+        if (req == null || req.getUid() == null || StringUtils.isBlank(req.getCharacterId())) {
             return Result.fail(ResultCode.PARAM_ERROR);
         }
+        CalculateResp resp = new CalculateResp();
         List<RelicsDTO> randomRelicsDTOs = new ArrayList<>();
         List<RelicsDTO> targetRelicsDTOs = new ArrayList<>();
         JSONObject equipTypes = req.getEquipTypes() != null ? JSON.parseObject(JSON.toJSONString(req.getEquipTypes())) : null;
@@ -114,7 +117,7 @@ public class YuanController {
             randomRelicsDTOs.add(result.isEmpty() ? null : result.get(0));
             targetRelicsDTOs.add(result.size() > 1 ? result.get(1) : null);
         }
-        double currentScore = 0;
+        double maxScore = 0;
         List<RelicsDTO> result = new ArrayList<>();
         for (int i = 0; i < randomRelicsDTOs.size(); i++) {
             double score = randomRelicsDTOs.get(0) == null ? 0 : randomRelicsDTOs.get(i).getScore();
@@ -123,13 +126,15 @@ public class YuanController {
             for (RelicsDTO relicsDTO : tmp) {
                 score += relicsDTO == null ? 0 : relicsDTO.getScore();
             }
-            if(score>currentScore){
-                currentScore = score;
+            if (score > maxScore) {
+                maxScore = score;
                 result.clear();
-                result.add(randomRelicsDTOs.get(i));
                 result.addAll(tmp);
+                result.add(i, randomRelicsDTOs.get(i));
             }
         }
-        return Result.success(result);
+        resp.setRelicsDTOS(result);
+        resp.setScore(maxScore);
+        return Result.success(resp);
     }
 }

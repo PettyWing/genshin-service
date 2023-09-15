@@ -10,7 +10,7 @@ public class CalculateReq {
     @JSONField(name = "uid")
     private Long uid;
     @JSONField(name = "characterId")
-    private Long characterId;
+    private String characterId;
     @JSONField(name = "equipTypes")
     private EquipTypesDTO equipTypes;
     @JSONField(name = "groupType")
@@ -20,9 +20,9 @@ public class CalculateReq {
 
     public void setUid(Long uid) {this.uid = uid;}
 
-    public Long getCharacterId() {return characterId;}
+    public String getCharacterId() {return characterId;}
 
-    public void setCharacterId(Long characterId) {this.characterId = characterId;}
+    public void setCharacterId(String characterId) {this.characterId = characterId;}
 
     public EquipTypesDTO getEquipTypes() {return equipTypes;}
 

@@ -64,9 +64,6 @@ public class RelicsDTO {
     public RelicsDTO() {
     }
 
-    public RelicsDTO(Double score) {
-        this.score = score;
-    }
 
     public RelicsDTO(EquipType equipType, String groupType, AppendProp appendProp, double mainValue) {
         this.equipType = equipType;

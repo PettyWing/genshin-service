@@ -27,8 +27,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import static com.example.uumemory.constants.Constants.CHARACTER_DTOS;
-
 @Service
 public class YuanServcie {
     private static final Logger logger = LoggerFactory.getLogger(YuanServcie.class);
@@ -43,9 +41,13 @@ public class YuanServcie {
      * @param characterId 人物
      * @param relicsDTOs  圣遗物数据
      */
-    public List<RelicsDTO> calculateRelicsScore(Long characterId, List<RelicsDTO> relicsDTOs, String groupType) {
+    public List<RelicsDTO> calculateRelicsScore(String characterId, List<RelicsDTO> relicsDTOs, String groupType) {
         try {
             if (relicsDTOs == null || relicsDTOs.isEmpty()) {
+                return null;
+            }
+            RelicsAttributes relicsYield = Constants.getCharacter(characterId);
+            if (relicsYield == null) {
                 return null;
             }
             // 任意的圣遗物
@@ -56,14 +58,13 @@ public class YuanServcie {
             AtomicReference<RelicsDTO> tmpTargetRelicsDTO = new AtomicReference<>();
             relicsDTOs.forEach(relicsDTO -> {
                 RelicsAttributes relicsAttributes = relicsDTO.getAttributes();
-                RelicsAttributes relicsYield = CHARACTER_DTOS.get(characterId).getRelicsAttributes();
-                double score = Optional.ofNullable(relicsAttributes.getCriticalStrikeRate()).orElse(0.0) * 2 * relicsYield.getCriticalStrikeRate()
-                    + Optional.ofNullable(relicsAttributes.getCriticalStrikeDamage()).orElse(0.0) * 1 * relicsYield.getCriticalStrikeDamage()
-                    + Optional.ofNullable(relicsAttributes.getProficients()).orElse(0.0) * 0.33 * relicsYield.getProficients()
-                    + Optional.ofNullable(relicsAttributes.getChargingRate()).orElse(0.0) * 1.1979 * relicsYield.getChargingRate()
-                    + Optional.ofNullable(relicsAttributes.getMaxAttack()).orElse(0.0) * 1.33 * relicsYield.getMaxAttack()
-                    + Optional.ofNullable(relicsAttributes.getMaxHealth()).orElse(0.0) * 1.33 * relicsYield.getMaxHealth()
-                    + Optional.ofNullable(relicsAttributes.getMaxDefense()).orElse(0.0) * 1.06 * relicsYield.getMaxDefense();
+                double score = Optional.ofNullable(relicsAttributes.getCriticalStrikeRate()).orElse(0.0) * 2 * Optional.ofNullable(relicsYield.getCriticalStrikeRate()).orElse(0.0)
+                    + Optional.ofNullable(relicsAttributes.getCriticalStrikeDamage()).orElse(0.0) * 1 * Optional.ofNullable(relicsYield.getCriticalStrikeDamage()).orElse(0.0)
+                    + Optional.ofNullable(relicsAttributes.getProficients()).orElse(0.0) * 0.33 * Optional.ofNullable(relicsYield.getProficients()).orElse(0.0)
+                    + Optional.ofNullable(relicsAttributes.getChargingRate()).orElse(0.0) * 1.1979 * Optional.ofNullable(relicsYield.getChargingRate()).orElse(0.0)
+                    + Optional.ofNullable(relicsAttributes.getMaxAttack()).orElse(0.0) * 1.33 * Optional.ofNullable(relicsYield.getMaxAttack()).orElse(0.0)
+                    + Optional.ofNullable(relicsAttributes.getMaxHealth()).orElse(0.0) * 1.33 * Optional.ofNullable(relicsYield.getMaxHealth()).orElse(0.0)
+                    + Optional.ofNullable(relicsAttributes.getMaxDefense()).orElse(0.0) * 1.06 * Optional.ofNullable(relicsYield.getMaxDefense()).orElse(0.0);
                 if (relicsDTO.getType().equals(EquipType.DRESS) &&
                     (relicsAttributes.getAppendProp().equals(AppendProp.CRITICAL_STRIKE_DAMAGE)) || relicsAttributes.getAppendProp().equals(AppendProp.CRITICAL_STRIKE_RATE)) {
                     // 如果是暴击率或者暴击头，加20分
@@ -79,7 +80,7 @@ public class YuanServcie {
                     tmpTargetScore.set(score);
                 }
             });
-            return Stream.of(tmpRandomRelicsDTO.get(),tmpTargetRelicsDTO.get()).collect(Collectors.toList());
+            return Stream.of(tmpRandomRelicsDTO.get(), tmpTargetRelicsDTO.get()).collect(Collectors.toList());
         } catch (Exception e) {
             logger.error("calculateRelicsScore", e);
             return null;

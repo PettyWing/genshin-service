@@ -14,10 +14,13 @@ public class Constants {
     public static JSONObject CHARACTERS;
     public static JSONObject LOC_INFO;
 
+    public static JSONObject RELICS_INFO;
+
     @PostConstruct
     public void init(){
         CHARACTERS  = JSON.parseObject(ResourceReader.read("/store/character.json"));
         LOC_INFO  = JSON.parseObject(ResourceReader.read("/store/loc.json"));
+        RELICS_INFO  = JSON.parseObject(ResourceReader.read("/store/relics.json"));
     }
 
     // TODO: 2023/9/15 目前缺少的10000061,10000081,10000082,10000083,10000084,10000085,10000005-503,10000007-503

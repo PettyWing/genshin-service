@@ -2,6 +2,7 @@ package com.example.uumemory.controller;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -9,20 +10,20 @@ import java.util.stream.Collectors;
 import javax.annotation.Resource;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 
+import com.example.uumemory.constants.Constants;
 import com.example.uumemory.constants.EquipType;
 import com.example.uumemory.constants.ResultCode;
 import com.example.uumemory.dto.RelicsDTO;
 import com.example.uumemory.dto.Result;
-import com.example.uumemory.entity.RelicsParam;
 import com.example.uumemory.req.CalculateReq;
 import com.example.uumemory.req.CalculateReq.CharacterInfo;
 import com.example.uumemory.resp.CalculateResp;
 import com.example.uumemory.resp.CalculateResp.CharacterResp;
 import com.example.uumemory.resp.LoginResp;
 import com.example.uumemory.service.YuanServcie;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -171,6 +172,8 @@ public class YuanController {
                     .collect(Collectors.toList());
                 characterResp.setRelicsDTOS(result);
                 characterResp.setScore(maxScore);
+                characterResp.setCharacterId(characterInfo.getCharacterId());
+                characterResp.setCharacterName(Constants.LOC_INFO.getString(String.valueOf(characterInfo.getCharacterId())));
                 characterResps.add(characterResp);
             }
             resp.setCharacters(characterResps);
@@ -179,5 +182,29 @@ public class YuanController {
             logger.error("calculateCharacterRelics", e);
         }
         return Result.fail(ResultCode.SYSTEM_ERROR);
+    }
+
+    /**
+     * 加载角色信息
+     *
+     * @return
+     */
+    @RequestMapping(value = "/getCharacter", method = RequestMethod.GET)
+    public Result<JSONObject> getCharacter() {
+        JSONObject characters = new JSONObject();
+        for (Map.Entry<String, Object> entry : Constants.CHARACTERS.entrySet()) {
+            characters.put(entry.getKey(), Constants.LOC_INFO.getString(((JSONObject)entry.getValue()).getString("NameTextMapHash")));
+        }
+        return Result.success(characters);
+    }
+
+    /**
+     * 加载圣遗物
+     *
+     * @return
+     */
+    @RequestMapping(value = "/getRelics", method = RequestMethod.GET)
+    public Result<JSONObject> getRelics() {
+        return Result.success(Constants.RELICS_INFO);
     }
 }

@@ -17,7 +17,25 @@ public class CalculateResp {
 
     public static class CharacterResp{
         private double score;
+        private String characterId;
+        private String characterName;
         private List<RelicsDTO> relicsDTOS;
+
+        public String getCharacterId() {
+            return characterId;
+        }
+
+        public void setCharacterId(String characterId) {
+            this.characterId = characterId;
+        }
+
+        public String getCharacterName() {
+            return characterName;
+        }
+
+        public void setCharacterName(String characterName) {
+            this.characterName = characterName;
+        }
 
         public double getScore() {
             return score;
